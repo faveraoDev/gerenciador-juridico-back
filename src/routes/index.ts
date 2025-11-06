@@ -5,6 +5,7 @@ import processosRouter from './processos';
 import documentosRouter from './documentos';
 import locaisRouter from './locais';
 import enderecosRouter from './enderecos';
+import usuariosRouter from './usuarios';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/processos', processosRouter);
 router.use('/documentos', documentosRouter);
 router.use('/locais', locaisRouter);
 router.use('/enderecos', enderecosRouter);
+router.use('/usuarios', usuariosRouter);
 
 export default router;
