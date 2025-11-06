@@ -7,6 +7,20 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Usuario {
+  ID_usuario     String   @id @default(uuid()) @map("ID_usuario")
+  EMAIL_usuario  String   @unique @map("EMAIL_usuario")
+  SENHA_usuario  String   @map("SENHA_usuario")
+  criadoEm       DateTime @default(now()) @map("criado_em")
+  atualizadoEm   DateTime @updatedAt @map("atualizado_em")
+
+  // Se o usuário estiver vinculado a um advogado interno
+  Advogado_ID    String?  @map("Advogados_ID_advogado")
+  advogado       Advogado? @relation(fields: [Advogado_ID], references: [ID_advogado])
+
+  @@map("Usuarios")
+}
+
 model Advogado {
   ID_advogado    String                    @id @default(uuid()) @map("ID_advogado")
   NOME_advogado  String?
