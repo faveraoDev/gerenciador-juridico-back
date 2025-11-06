@@ -1,0 +1,129 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Advogado {
+  ID_advogado    String                    @id @default(uuid()) @map("ID_advogado")
+  NOME_advogado  String?
+  CPF_advogado   String?
+  OAB_advogado   String?
+  DTNSC_advogado DateTime?                 @map("DTNSC_advogado")
+  EMAIL_advogado String?
+  advProcessos   AdvogadoProcessoCliente[]
+
+  @@map("Advogados")
+}
+
+model Cliente {
+  ID_cliente            String  @id @default(uuid()) @map("ID_cliente")
+  NOME_cliente          String
+  CPF_cliente           String?
+  EMAIL_cliente         String?
+  Enderecos_ID_endereco String? @map("Enderecos_ID_endereço")
+
+  endereco  Endereco?              @relation(fields: [Enderecos_ID_endereco], references: [ID_endereco])
+  processos ProcessosHasClientes[]
+
+  @@map("clientes")
+}
+
+model Processo {
+  ID_processo        String                 @id @default(uuid()) @map("ID_processo")
+  NUMERO_processo    String?
+  DESCRICAO          String?
+  STATUS             String?
+  Locais_ID_local    String?
+  local              Locais?                @relation(fields: [Locais_ID_local], references: [ID_local])
+  documentos         DocumentoProcesso[]
+  clientes           ProcessosHasClientes[]
+  ProcessosHasLocais ProcessosHasLocais[]
+
+  @@map("Processos")
+}
+
+model Documento {
+  ID_documento   String              @id @default(uuid()) @map("ID_documento")
+  NOME_documento String?
+  TIPO_documento String?
+  processos      DocumentoProcesso[]
+
+  @@map("Documentos")
+}
+
+model DocumentoProcesso {
+  Documentos_ID_documento String
+  Processos_ID_processo   String
+
+  documento Documento @relation(fields: [Documentos_ID_documento], references: [ID_documento])
+  processo  Processo  @relation(fields: [Processos_ID_processo], references: [ID_processo])
+
+  @@id([Documentos_ID_documento, Processos_ID_processo])
+  @@map("Documentos_has_Processos")
+}
+
+model ProcessosHasClientes {
+  Processos_ID_processo String
+  Clientes_ID_cliente   String
+
+  processo Processo @relation(fields: [Processos_ID_processo], references: [ID_processo])
+  cliente  Cliente  @relation(fields: [Clientes_ID_cliente], references: [ID_cliente])
+
+  advogados AdvogadoProcessoCliente[]
+
+  @@id([Processos_ID_processo, Clientes_ID_cliente])
+  @@map("Processos_has_Clientes")
+}
+
+model AdvogadoProcessoCliente {
+  Advogados_ID_advogado String
+  Processos_ID_processo String
+  Clientes_ID_cliente   String
+
+  advogado        Advogado             @relation(fields: [Advogados_ID_advogado], references: [ID_advogado])
+  processoCliente ProcessosHasClientes @relation(fields: [Processos_ID_processo, Clientes_ID_cliente], references: [Processos_ID_processo, Clientes_ID_cliente])
+
+  @@id([Advogados_ID_advogado, Processos_ID_processo, Clientes_ID_cliente])
+  @@map("Advogados_has_Processos_has_Clientes")
+}
+
+model Endereco {
+  ID_endereco String  @id @default(uuid()) @map("ID_endereço")
+  RUA         String?
+  NUMERO      String?
+  BAIRRO      String?
+  CIDADE      String?
+  ESTADO      String?
+
+  clientes Cliente[]
+  locais   Locais[]  @relation("EnderecoLocais")
+
+  @@map("enderecos")
+}
+
+model Locais {
+  ID_local              String  @id @default(uuid()) @map("ID_local")
+  NOME_local            String?
+  Enderecos_ID_endereco String? @map("Enderecos_ID_endereço")
+
+  endereco  Endereco?            @relation("EnderecoLocais", fields: [Enderecos_ID_endereco], references: [ID_endereco])
+  processos ProcessosHasLocais[]
+  Processo  Processo[]
+
+  @@map("locais")
+}
+
+model ProcessosHasLocais {
+  Processos_ID_processo String @map("Processos_ID_processo")
+  Locais_ID_local       String @map("Locais_ID_local")
+
+  processo Processo @relation(fields: [Processos_ID_processo], references: [ID_processo])
+  local    Locais   @relation(fields: [Locais_ID_local], references: [ID_local])
+
+  @@id([Processos_ID_processo, Locais_ID_local])
+  @@map("processos_has_locais")
+}
