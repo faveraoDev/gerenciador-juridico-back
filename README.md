@@ -43,3 +43,6 @@
 - PUT /api/enderecos/:id
 - PATCH /api/enderecos/:id
 - DELETE /api/enderecos/:id
+
+- POST /api/usuarios/register
+- POST /api/usuarios/login
