@@ -15,7 +15,7 @@ export const getAdvogado = async (req: Request, res: Response) => {
 
 export const createAdvogado = async (req: Request, res: Response) => {
   try {
-    const { NOME_advogado, CPF_advogado, OAB_advogado, DTNSC_advogado, EMAIL_advogado } = req.body;
+    const { NOME_advogado, CPF_advogado, OAB_advogado, DTNSC_advogado, TEL_advogado, EMAIL_advogado } = req.body;
 
     const created = await prisma.advogado.create({
       data: {
@@ -23,6 +23,7 @@ export const createAdvogado = async (req: Request, res: Response) => {
         CPF_advogado,
         OAB_advogado,
         DTNSC_advogado: new Date(DTNSC_advogado),
+        TEL_advogado,
         EMAIL_advogado,
       },
     });
