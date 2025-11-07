@@ -6,6 +6,7 @@ import { autenticar } from "./middleware/authMiddleware";
 import usuariosRouter from "./routes/usuarios";
 
 dotenv.config();
+
 const app = express();
 app.use(cors({ origin: true }));
 app.use(express.json());

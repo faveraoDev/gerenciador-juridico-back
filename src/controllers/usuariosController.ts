@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "segredo_super_secreto"; // ideal guardar em .env
 
-// 📌 Registrar novo usuário
+// Registrar novo usuário
 export const register = async (req: Request, res: Response) => {
   try {
     const { nome, email, senha } = req.body;
@@ -46,7 +46,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-// 📌 Login de usuário
+// Login de usuário
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, senha } = req.body;
@@ -83,5 +83,63 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao realizar login." });
+  }
+};
+// Trocar senha do usuário
+export const trocarSenha = async (req: Request, res: Response) => {
+  try {
+    const { senhaAtual, senhaNova } = req.body;
+    const usuarioId = req.user?.id; // ID vem do middleware de autenticação
+
+    if (!usuarioId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    if (!senhaAtual || !senhaNova) {
+      return res.status(400).json({ error: "Senha atual e nova senha são obrigatórias." });
+    }
+
+    if (senhaNova.length < 6) {
+      return res.status(400).json({ error: "A nova senha deve ter no mínimo 6 caracteres." });
+    }
+
+    // Buscar usuário no banco
+    const usuario = await prisma.usuario.findUnique({
+      where: { ID_usuario: usuarioId },
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    // Verificar se a senha atual está correta
+    const senhaValida = await bcrypt.compare(senhaAtual, usuario.SENHA_usuario);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: "Senha atual incorreta." });
+    }
+
+    // Verificar se a nova senha é diferente da atual
+    const senhaIgual = await bcrypt.compare(senhaNova, usuario.SENHA_usuario);
+
+    if (senhaIgual) {
+      return res.status(400).json({ error: "A nova senha deve ser diferente da atual." });
+    }
+
+    // Criar hash da nova senha
+    const hashNovaSenha = await bcrypt.hash(senhaNova, 10);
+
+    // Atualizar senha no banco
+    await prisma.usuario.update({
+      where: { ID_usuario: usuarioId },
+      data: { SENHA_usuario: hashNovaSenha },
+    });
+
+    res.json({
+      message: "Senha alterada com sucesso!",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao trocar senha." });
   }
 };
