@@ -15,12 +15,16 @@ export const getEndereco = async (req: Request, res: Response) => {
 
 export const createEndereco = async (req: Request, res: Response) => {
   try {
+    const { cep, lgdr, nome, uf, bairro, cidade } = req.body;
+    
     const novoEndereco = await prisma.endereco.create({
       data: {
-        RUA: req.body.RUA,
-        BAIRRO: req.body.BAIRRO,
-        CIDADE: req.body.CIDADE,
-        ESTADO: req.body.ESTADO,
+        CEP_endereco: cep,
+        LGDR_endereco: lgdr,
+        NOME_endereco: nome,
+        UF_endereco: uf,
+        BAIRRO_endereco: bairro,
+        CIDADE_endereco: cidade
       },
     });
     res.json(novoEndereco);
