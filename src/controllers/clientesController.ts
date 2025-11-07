@@ -15,12 +15,19 @@ export const getCliente = async (req: Request, res: Response) => {
 
 export const createCliente = async (req: Request, res: Response) => {
   try {
+    const { nome, rg, cpf, dtnsc, email, tel, ocupacao, justgrat, nmrend } = req.body;
+
     const novoCliente = await prisma.cliente.create({
       data: {
-        NOME_cliente: req.body.NOME_cliente,
-        CPF_cliente: req.body.CPF_cliente,
-        EMAIL_cliente: req.body.EMAIL_cliente,
-        Enderecos_ID_endereco: req.body.Enderecos_ID_endereco
+        NOME_cliente: nome,
+        RG_cliente: rg,
+        CPF_cliente: cpf,
+        DTNSC_cliente: new Date(dtnsc),
+        EMAIL_cliente: email,
+        TEL_cliente: tel,
+        OCUPACAO_cliente: ocupacao,
+        JUSTGRAT_cliente: justgrat,
+        NMREND_cliente: nmrend
       },
     });
     res.json(novoCliente);
