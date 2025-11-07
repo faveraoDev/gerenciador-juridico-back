@@ -27,18 +27,111 @@ export const getProcesso = async (req: Request, res: Response) => {
 };
 
 export const createProcesso = async (req: Request, res: Response) => {
+  const { 
+    numeroProcesso, 
+    dataInicio, 
+    cpfCliente, 
+    oabAdvogado, 
+    status, 
+    nomeLocal
+  } = req.body;
+  
   try {
+    // Validar se já existe processo com esse número
+    const processoExistente = await prisma.processo.findFirst({
+      where: { NUMERO_processo: numeroProcesso }
+    });
+
+    if (processoExistente) {
+      return res.status(400).json({ 
+        error: 'Processo já cadastrado',
+        message: `Já existe um processo com o número: ${numeroProcesso}` 
+      });
+    }
+
+    // Buscar o cliente pelo CPF
+    const cliente = await prisma.cliente.findUnique({
+      where: { CPF_cliente: cpfCliente }
+    });
+
+    if (!cliente) {
+      return res.status(404).json({ 
+        error: 'Cliente não encontrado',
+        message: `Nenhum cliente encontrado com o CPF: ${cpfCliente}` 
+      });
+    }
+
+    // Buscar o advogado pela OAB
+    const advogado = await prisma.advogado.findUnique({
+      where: { OAB_advogado: oabAdvogado }
+    });
+
+    if (!advogado) {
+      return res.status(404).json({ 
+        error: 'Advogado não encontrado',
+        message: `Nenhum advogado encontrado com a OAB: ${oabAdvogado}` 
+      });
+    }
+
+    // Buscar o local (pasta física) pelo nome
+    const local = await prisma.locais.findFirst({
+      where: { NOME_local: nomeLocal }
+    });
+
+    if (!local) {
+      return res.status(404).json({ 
+        error: 'Local não encontrado',
+        message: `Nenhum local encontrado com o nome: ${nomeLocal}` 
+      });
+    }
+
+    // Criar o processo com todas as associações
     const novoProcesso = await prisma.processo.create({
       data: {
-        NUMERO_processo: req.body.NUMERO_processo,
-        DESCRICAO: req.body.DESCRICAO,
-        STATUS: req.body.STATUS,
-        Locais_ID_local: req.body.Locais_ID_local,
+        NUMERO_processo: numeroProcesso,
+        STATUS_processo: status,
+        DATAINICIO_processo: new Date(dataInicio),
+        Locais_ID_local: local.ID_local,
+        // Associar cliente
+        clientes: {
+          create: {
+            Clientes_ID_cliente: cliente.ID_cliente,
+            // Associar advogado ao cliente no processo
+            advogados: {
+              create: {
+                Advogados_ID_advogado: advogado.ID_advogado
+              }
+            }
+          }
+        }
       },
+      // Retornar com todos os dados relacionados
+      include: {
+        local: true,
+        clientes: {
+          include: {
+            cliente: true,
+            advogados: {
+              include: {
+                advogado: true
+              }
+            }
+          }
+        }
+      }
     });
-    res.json(novoProcesso);
+    
+    res.status(201).json({
+      message: 'Processo criado com sucesso',
+      processo: novoProcesso
+    });
+
   } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    console.error('Erro ao criar processo:', err);
+    res.status(500).json({ 
+      error: 'Erro ao criar processo',
+      message: err.message 
+    });
   }
 };
 
