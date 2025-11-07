@@ -68,8 +68,9 @@ model Processo {
 
 model Documento {
   ID_documento   String              @id @default(uuid()) @map("ID_documento")
-  NOME_documento String?
   TIPO_documento String?
+  DATA_documento DateTime?
+  DESC_documento String?
   processos      DocumentoProcesso[]
 
   @@map("Documentos")
