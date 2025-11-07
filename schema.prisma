@@ -43,7 +43,7 @@ model Cliente {
   OCUPACAO_cliente      String?
   JUSTGRAT_cliente      Boolean? @default(false)
   NMREND_cliente        String?
-  Enderecos_ID_endereco String? @map("Enderecos_ID_endereço")
+  Enderecos_ID_endereco String?
 
   endereco  Endereco?              @relation(fields: [Enderecos_ID_endereco], references: [ID_endereco])
   processos ProcessosHasClientes[]
@@ -111,14 +111,13 @@ model AdvogadoProcessoCliente {
 }
 
 model Endereco {
-  ID_endereco String  @id @default(uuid()) @map("ID_endereço")
+  ID_endereco String  @id @default(uuid())
   RUA         String?
   BAIRRO      String?
   CIDADE      String?
   ESTADO      String?
 
   clientes Cliente[]
-  locais   Locais[]  @relation("EnderecoLocais")
 
   @@map("enderecos")
 }
@@ -126,9 +125,7 @@ model Endereco {
 model Locais {
   ID_local              String  @id @default(uuid()) @map("ID_local")
   NOME_local            String?
-  Enderecos_ID_endereco String? @map("Enderecos_ID_endereço")
 
-  endereco  Endereco?            @relation("EnderecoLocais", fields: [Enderecos_ID_endereco], references: [ID_endereco])
   processos ProcessosHasLocais[]
   Processo  Processo[]
 

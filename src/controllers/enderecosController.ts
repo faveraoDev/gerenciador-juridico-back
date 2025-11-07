@@ -8,7 +8,7 @@ export const listEnderecos = async (req: Request, res: Response) => {
 
 export const getEndereco = async (req: Request, res: Response) => {
   const id = req.params.id;
-  const e = await prisma.endereco.findUnique({ where: { ID_endereço: id }, include: { clientes: true } });
+  const e = await prisma.endereco.findUnique({ where: { ID_endereco: id }, include: { clientes: true } });
   if (!e) return res.status(404).json({ error: 'Endereço não encontrado' });
   res.json(e);
 };
@@ -32,7 +32,7 @@ export const createEndereco = async (req: Request, res: Response) => {
 export const updateEndereco = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const updated = await prisma.endereco.update({ where: { ID_endereço: id }, data: req.body });
+    const updated = await prisma.endereco.update({ where: { ID_endereco: id }, data: req.body });
     res.json(updated);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -42,7 +42,7 @@ export const updateEndereco = async (req: Request, res: Response) => {
 export const deleteEndereco = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    await prisma.endereco.delete({ where: { ID_endereço: id } });
+    await prisma.endereco.delete({ where: { ID_endereco: id } });
     res.status(204).send();
   } catch (err: any) {
     res.status(400).json({ error: err.message });
