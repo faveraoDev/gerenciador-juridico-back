@@ -14,14 +14,45 @@ export const getDocumento = async (req: Request, res: Response) => {
 };
 
 export const createDocumento = async (req: Request, res: Response) => {
+  const { tipo, data, desc, numeroProcesso } = req.body;
+  
   try {
+    // Busca o processo pelo número que o usuário conhece
+    const processo = await prisma.processo.findFirst({
+      where: { NUMERO_processo: numeroProcesso }
+    });
+
+    // Valida se o processo existe
+    if (!processo) {
+      return res.status(404).json({ 
+        error: 'Processo não encontrado',
+        message: `Nenhum processo encontrado com o número: ${numeroProcesso}` 
+      });
+    }
+
+    // Cria o documento e associa ao processo usando o ID interno
     const novoDoc = await prisma.documento.create({
       data: {
-        NOME_documento: req.body.NOME_documento,
-        TIPO_documento: req.body.TIPO_documento,
+        TIPO_documento: tipo,
+        DATA_documento: new Date(data),
+        DESC_documento: desc,
+        processos: {
+          create: {
+            Processos_ID_processo: processo.ID_processo
+          }
+        }
       },
+      // Retorna o documento com os dados do processo inclusos
+      include: {
+        processos: {
+          include: {
+            processo: true
+          }
+        }
+      }
     });
-    res.json(novoDoc);
+    
+    res.status(201).json(novoDoc);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
