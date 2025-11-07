@@ -18,7 +18,6 @@ export const createEndereco = async (req: Request, res: Response) => {
     const novoEndereco = await prisma.endereco.create({
       data: {
         RUA: req.body.RUA,
-        NUMERO: req.body.NUMERO,
         BAIRRO: req.body.BAIRRO,
         CIDADE: req.body.CIDADE,
         ESTADO: req.body.ESTADO,
