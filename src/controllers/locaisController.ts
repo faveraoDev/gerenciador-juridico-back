@@ -1,3 +1,5 @@
+// CORRIGIR LOCAIS
+
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
 
@@ -14,11 +16,13 @@ export const getLocal = async (req: Request, res: Response) => {
 };
 
 export const createLocal = async (req: Request, res: Response) => {
+  const { nome, capacidade } = req.body;
+  
   try {
     const novoLocal = await prisma.locais.create({
       data: {
-        NOME_local: req.body.NOME_local,
-        Enderecos_ID_endereco: req.body.Enderecos_ID_endereco,
+        NOME_local: nome,
+        CAPACIDADE_local: capacidade
       },
     });
     res.json(novoLocal);
