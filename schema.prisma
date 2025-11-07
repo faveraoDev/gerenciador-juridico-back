@@ -35,8 +35,14 @@ model Advogado {
 model Cliente {
   ID_cliente            String  @id @default(uuid()) @map("ID_cliente")
   NOME_cliente          String
-  CPF_cliente           String?
+  RG_cliente            String?
+  CPF_cliente           String? @unique
+  DTNSC_cliente         DateTime?
   EMAIL_cliente         String?
+  TEL_cliente           String?
+  OCUPACAO_cliente      String?
+  JUSTGRAT_cliente      Boolean? @default(false)
+  NMREND_cliente        String?
   Enderecos_ID_endereco String? @map("Enderecos_ID_endereço")
 
   endereco  Endereco?              @relation(fields: [Enderecos_ID_endereco], references: [ID_endereco])
@@ -107,7 +113,6 @@ model AdvogadoProcessoCliente {
 model Endereco {
   ID_endereco String  @id @default(uuid()) @map("ID_endereço")
   RUA         String?
-  NUMERO      String?
   BAIRRO      String?
   CIDADE      String?
   ESTADO      String?
