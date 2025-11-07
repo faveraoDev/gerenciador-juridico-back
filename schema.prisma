@@ -55,8 +55,8 @@ model Cliente {
 model Processo {
   ID_processo        String                 @id @default(uuid()) @map("ID_processo")
   NUMERO_processo    String?
-  DESCRICAO          String?
-  STATUS             String?
+  STATUS_processo         String?
+  DATAINICIO_processo     DateTime?
   Locais_ID_local    String?
   local              Locais?                @relation(fields: [Locais_ID_local], references: [ID_local])
   documentos         DocumentoProcesso[]
@@ -129,6 +129,7 @@ model Endereco {
 model Locais {
   ID_local              String  @id @default(uuid()) @map("ID_local")
   NOME_local            String?
+  CAPACIDADE_local      Int?
 
   processos ProcessosHasLocais[]
   Processo  Processo[]
