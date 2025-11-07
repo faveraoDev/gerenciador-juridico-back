@@ -20,11 +20,13 @@ model Usuario {
 
 model Advogado {
   ID_advogado    String                    @id @default(uuid()) @map("ID_advogado")
-  NOME_advogado  String?
-  CPF_advogado   String?
-  OAB_advogado   String?
+  NOME_advogado  String?                    
+  CPF_advogado   String?                   @unique 
+  OAB_advogado   String?                   @unique 
   DTNSC_advogado DateTime?                 @map("DTNSC_advogado")
+  TEL_advogado  String?
   EMAIL_advogado String?
+  STATUS_advogado Boolean?                 @default(true)
   advProcessos   AdvogadoProcessoCliente[]
 
   @@map("Advogados")
