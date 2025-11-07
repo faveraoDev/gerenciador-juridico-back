@@ -99,8 +99,8 @@ export const trocarSenha = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Senha atual e nova senha são obrigatórias." });
     }
 
-    if (senhaNova.length < 6) {
-      return res.status(400).json({ error: "A nova senha deve ter no mínimo 6 caracteres." });
+    if (senhaNova.length < 8) {
+      return res.status(400).json({ error: "A nova senha deve ter no mínimo 8 caracteres." });
     }
 
     // Buscar usuário no banco
