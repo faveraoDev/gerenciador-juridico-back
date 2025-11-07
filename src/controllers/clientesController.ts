@@ -15,7 +15,39 @@ export const getCliente = async (req: Request, res: Response) => {
 
 export const createCliente = async (req: Request, res: Response) => {
   try {
-    const { nome, rg, cpf, dtnsc, email, tel, ocupacao, justgrat, nmrend } = req.body;
+    const { nome, rg, cpf, dtnsc, email, tel, ocupacao, justgrat, nmrend, compl, endereco } = req.body;
+
+    let enderecoID;
+
+    if (endereco) {
+      // procura um endereço existente com mesmos dados
+      const existente = await prisma.endereco.findFirst({
+        where: {
+          CEP_endereco: endereco.cep,
+          LGDR_endereco: endereco.lgdr,
+          NOME_endereco: endereco.nome,
+          UF_endereco: endereco.uf,
+          BAIRRO_endereco: endereco.bairro,
+          CIDADE_endereco: endereco.cidade
+        }
+      });
+
+      if (existente) {
+        enderecoID = existente.ID_endereco;
+      } else {
+        const novoEnd = await prisma.endereco.create({
+          data: {
+            CEP_endereco: endereco.cep,
+            LGDR_endereco: endereco.lgdr,
+            NOME_endereco: endereco.nome,
+            UF_endereco: endereco.uf,
+            BAIRRO_endereco: endereco.bairro,
+            CIDADE_endereco: endereco.cidade
+          },
+        });
+        enderecoID = novoEnd.ID_endereco;
+      }
+    }
 
     const novoCliente = await prisma.cliente.create({
       data: {
@@ -27,9 +59,13 @@ export const createCliente = async (req: Request, res: Response) => {
         TEL_cliente: tel,
         OCUPACAO_cliente: ocupacao,
         JUSTGRAT_cliente: justgrat,
-        NMREND_cliente: nmrend
+        NMREND_cliente: nmrend,
+        COMPL_cliente: compl,
+        Enderecos_ID_endereco: enderecoID
       },
+      include: { endereco: true }
     });
+
     res.json(novoCliente);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
