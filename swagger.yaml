@@ -478,6 +478,12 @@ paths:
       responses:
         '201':
           description: Processo criado
+        '400':
+          description: Erro na criação do processo
+        '404':
+          description: Cliente, Advogado ou Local não encontrado
+        '501':
+          description: Erro interno do servidor ao criar o processo
 
   /api/processos/{id}:
     get:
@@ -513,6 +519,30 @@ paths:
       responses:
         '200':
           description: Processo atualizado
+        '400':
+          description: Erro na atualização do processo
+
+    patch:
+      summary: Atualiza parcialmente um processo
+      tags: [Processos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Processo'
+      responses:
+        '200':
+          description: Processo atualizado
+        '400':
+          description: Erro na atualização do processo
+        
     delete:
       summary: Exclui um processo
       tags: [Processos]
@@ -526,3 +556,5 @@ paths:
       responses:
         '204':
           description: Processo removido
+        '400':
+          description: Erro na remoção do processo
