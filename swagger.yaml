@@ -379,6 +379,8 @@ paths:
       responses:
         '201':
           description: Endereço criado
+        '400':
+          description: Erro na criação do endereço
 
   /api/enderecos/{id}:
     get:
@@ -394,6 +396,8 @@ paths:
       responses:
         '200':
           description: Endereço encontrado
+        '404':
+          description: Endereço não encontrado
     put:
       summary: Atualiza um endereço
       tags: [Endereços]
@@ -412,6 +416,30 @@ paths:
       responses:
         '200':
           description: Endereço atualizado
+        '400':
+          description: Erro na atualização do endereço
+
+    patch:
+      summary: Atualiza parcialmente um endereço
+      tags: [Endereços]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Endereco'
+      responses:
+        '200':
+          description: Endereço atualizado
+        '400':
+          description: Erro na atualização do endereço
+
     delete:
       summary: Exclui um endereço
       tags: [Endereços]
@@ -425,6 +453,8 @@ paths:
       responses:
         '204':
           description: Endereço removido
+        '400':
+          description: Erro na remoção do endereço
 
   /api/processos:
     get:
@@ -463,6 +493,8 @@ paths:
       responses:
         '200':
           description: Processo encontrado
+        '404':
+          description: Processo não encontrado
     put:
       summary: Atualiza um processo
       tags: [Processos]
