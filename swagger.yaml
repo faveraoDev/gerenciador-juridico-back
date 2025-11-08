@@ -626,8 +626,6 @@ paths:
               properties:
                 NOME_local:
                   type: string
-                ENDERECO_local:
-                  type: string
       responses:
         '201':
           description: Local criado
@@ -668,8 +666,6 @@ paths:
               properties: 
                 NOME_local:
                   type: string
-                ENDERECO_local:
-                  type: string
       responses:
         '200':
           description: Local atualizado
@@ -693,8 +689,6 @@ paths:
               type: object
               properties: 
                 NOME_local:
-                  type: string
-                ENDERECO_local:
                   type: string
       responses:
         '200':
