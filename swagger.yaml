@@ -191,6 +191,8 @@ paths:
       responses:
         '201':
           description: Cliente criado com sucesso
+        '400':
+          description: Erro na criação do cliente
 
   /api/clientes/{id}:
     get:
@@ -226,6 +228,27 @@ paths:
       responses:
         '200':
           description: Cliente atualizado
+
+    patch:
+      summary: Atualiza parcialmente os dados de um cliente
+      tags: [Clientes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+      responses:
+        '200':
+          description: Cliente atualizado parcialmente
+
     delete:
       summary: Exclui um cliente
       tags: [Clientes]
