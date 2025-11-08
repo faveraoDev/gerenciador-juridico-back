@@ -230,7 +230,7 @@ paths:
           description: Cliente atualizado
 
     patch:
-      summary: Atualiza parcialmente os dados de um cliente
+      summary: Atualiza parcialmente os dados de um cliente (por exemplo, email ou telefone)
       tags: [Clientes]
       security:
         - bearerAuth: []
@@ -286,6 +286,8 @@ paths:
       responses:
         '201':
           description: Advogado criado com sucesso
+        '400':
+          description: Erro na criação do advogado
 
   /api/advogados/{id}:
     get:
@@ -301,6 +303,28 @@ paths:
       responses:
         '200':
           description: Advogado encontrado
+
+    put:
+      summary: Atualiza um advogado
+      tags: [Advogados]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:      
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advogado'
+      responses:
+        '200':
+          description: Advogado atualizado
+        '400':
+          description: Erro na atualização do advogado
+
     patch:
       summary: Atualiza parcialmente o advogado (por exemplo, status)
       tags: [Advogados]
