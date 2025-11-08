@@ -558,3 +558,117 @@ paths:
           description: Processo removido
         '400':
           description: Erro na remoção do processo
+
+  /api/locais:
+    get:
+      summary: Lista todos os locais
+      tags: [Locais]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de locais
+    post:
+      summary: Cria um novo local
+      tags: [Locais]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NOME_local:
+                  type: string
+                ENDERECO_local:
+                  type: string
+      responses:
+        '201':
+          description: Local criado
+        '400':
+          description: Erro na criação do local
+
+  /api/locais/{id}:
+    get:
+      summary: Busca local por ID
+      tags: [Locais]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Local encontrado
+        '404':
+          description: Local não encontrado
+    put:
+      summary: Atualiza um local
+      tags: [Locais]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                NOME_local:
+                  type: string
+                ENDERECO_local:
+                  type: string
+      responses:
+        '200':
+          description: Local atualizado
+        '400':
+          description: Erro na atualização do local
+
+    patch:
+      summary: Atualiza parcialmente um local
+      tags: [Locais]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                NOME_local:
+                  type: string
+                ENDERECO_local:
+                  type: string
+      responses:
+        '200':
+          description: Local atualizado
+        '400':
+          description: Erro na atualização do local
+
+    delete:
+      summary: Exclui um local
+      tags: [Locais]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Local removido
+        '400':
+          description: Erro na remoção do local
