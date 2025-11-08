@@ -25,11 +25,13 @@ components:
       properties:
         ID_usuario:
           type: string
+        NOME_usuario:
+          type: string
         EMAIL_usuario:
           type: string
         SENHA_usuario:
           type: string
-      required: [EMAIL_usuario, SENHA_usuario]
+      required: [NOME_usuario, EMAIL_usuario, SENHA_usuario]
 
     Cliente:
       type: object
@@ -55,7 +57,11 @@ components:
           type: boolean
         NMREND_cliente:
           type: string
-      required: [NOME_cliente, CPF_cliente]
+        COMPL_cliente:
+          type: string
+        Enderecos_ID_endereco:
+          type: string
+      required: [NOME_cliente, CPF_cliente, EMAIL_cliente, TEL_cliente, Enderecos_ID_endereco]
 
     Advogado:
       type: object
@@ -64,27 +70,39 @@ components:
           type: string
         NOME_advogado:
           type: string
+        CPF_advogado:
+          type: string
         OAB_advogado:
+          type: string
+        DTNSC_advogado:
+          type: string
+          format: date
+        TEL_advogado:
           type: string
         EMAIL_advogado:
           type: string
         STATUS_advogado:
           type: boolean
-      required: [NOME_advogado, OAB_advogado]
+      required: [NOME_advogado, CPF_advogado, OAB_advogado, STATUS_advogado]
 
     Endereco:
       type: object
       properties:
         ID_endereco:
           type: string
-        RUA:
+        CEP_endereco:
           type: string
-        BAIRRO:
+        LGDR_endereco:
           type: string
-        CIDADE:
+        NOME_endereco:
           type: string
-        ESTADO:
+        UF_endereco:
           type: string
+        BAIRRO_endereco:
+          type: string
+        CIDADE_endereco:
+          type: string
+      required: [CEP_endereco, LGDR_endereco, NOME_endereco, UF_endereco, BAIRRO_endereco, CIDADE_endereco]
 
     Processo:
       type: object
@@ -93,10 +111,39 @@ components:
           type: string
         NUMERO_processo:
           type: string
-        TIPO_processo:
-          type: string
         STATUS_processo:
           type: string
+        DATAINICIO_processo:
+          type: string
+          format: date
+        locais_ID_local:
+          type: string
+      required: [NUMERO_processo, STATUS_processo, DATAINICIO_processo, locais_ID_local]
+
+    Documento:
+      type: object
+      properties:
+        ID_documento:
+          type: string
+        TIPO_documento:
+          type: string
+        DATA_documento:
+          type: string
+          format: date
+        DESC_documento:
+          type: string
+      required: [TIPO_documento, DATA_documento, DESC_documento]
+
+    Locais:
+      type: object
+      properties:
+        ID_local:
+          type: string
+        NOME_local:
+          type: string
+        CAPACIDADE_local:
+          type: integer
+      required: [NOME_local, CAPACIDADE_local]
 
 security:
   - bearerAuth: []
