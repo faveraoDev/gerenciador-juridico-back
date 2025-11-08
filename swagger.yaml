@@ -141,9 +141,7 @@ components:
           type: string
         NOME_local:
           type: string
-        CAPACIDADE_local:
-          type: integer
-      required: [NOME_local, CAPACIDADE_local]
+      required: [NOME_local]
 
 security:
   - bearerAuth: []
