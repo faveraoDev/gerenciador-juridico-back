@@ -3,7 +3,7 @@ import prisma from "../prismaClient";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "segredo_super_secreto"; // ideal guardar em .env
+const JWT_SECRET = process.env.JWT_SECRET || "segredo_super_secreto";
 
 // Registrar novo usuário
 export const register = async (req: Request, res: Response) => {

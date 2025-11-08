@@ -1,49 +1,36 @@
 openapi: 3.0.3
 info:
-  title: Gerenciador Backend API
+  title: API - Gerenciador Jurídico
   version: 1.0.0
-  description: >-
-    Documentação OpenAPI (Swagger) para o backend do Gerenciador de Arquivos Jurídicos. Inclui endpoints principais para advogados, clientes, processos,
-    documentos, endereços e locais.
+  description: |
+    Documentação da API do Gerenciador Jurídico.
+    Todas as rotas (exceto `/api/usuarios/login` e `/api/usuarios`) exigem autenticação JWT via header `Authorization: Bearer <token>`.
+
 servers:
-  - url: http://localhost:4000/api
-    description: Local de desenvolvimento
-  - url: https://gerenciador-juridico-back.onrender.com/api
-    description: Servidor de produção
+  - url: http://localhost:4000
+    description: Servidor local de desenvolvimento
+  - url: https://gerenciador-juridico-back.onrender.com
+    description: Servidor hospedado (Render)
+
 components:
   securitySchemes:
-    BearerAuth:
+    bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   schemas:
-    Advogado:
+    Usuario:
       type: object
       properties:
-        ID_advogado:
+        ID_usuario:
           type: string
-        NOME_advogado:
+        EMAIL_usuario:
           type: string
-          nullable: true
-        CPF_advogado:
+        SENHA_usuario:
           type: string
-          nullable: true
-        OAB_advogado:
-          type: string
-          nullable: true
-        DTNSC_advogado:
-          type: string
-          format: date-time
-          nullable: true
-        EMAIL_advogado:
-          type: string
-          nullable: true
-        TEL_advogado:
-          type: string
-          nullable: true
-        STATUS_advogado:
-          type: boolean
-          nullable: true
+      required: [EMAIL_usuario, SENHA_usuario]
+
     Cliente:
       type: object
       properties:
@@ -53,35 +40,38 @@ components:
           type: string
         RG_cliente:
           type: string
-          nullable: true
         CPF_cliente:
           type: string
-          nullable: true
         DTNSC_cliente:
           type: string
-          format: date-time
-          nullable: true
+          format: date
         EMAIL_cliente:
           type: string
-          nullable: true
         TEL_cliente:
           type: string
-          nullable: true
         OCUPACAO_cliente:
           type: string
-          nullable: true
         JUSTGRAT_cliente:
           type: boolean
-          nullable: true
         NMREND_cliente:
           type: string
-          nullable: true
-        NUMERO_residencia:
+      required: [NOME_cliente, CPF_cliente]
+
+    Advogado:
+      type: object
+      properties:
+        ID_advogado:
           type: string
-          nullable: true
-        Enderecos_ID_endereco:
+        NOME_advogado:
           type: string
-          nullable: true
+        OAB_advogado:
+          type: string
+        EMAIL_advogado:
+          type: string
+        STATUS_advogado:
+          type: boolean
+      required: [NOME_advogado, OAB_advogado]
+
     Endereco:
       type: object
       properties:
@@ -89,16 +79,13 @@ components:
           type: string
         RUA:
           type: string
-          nullable: true
         BAIRRO:
           type: string
-          nullable: true
         CIDADE:
           type: string
-          nullable: true
         ESTADO:
           type: string
-          nullable: true
+
     Processo:
       type: object
       properties:
@@ -106,43 +93,35 @@ components:
           type: string
         NUMERO_processo:
           type: string
-          nullable: true
-        DESCRICAO:
+        TIPO_processo:
           type: string
-          nullable: true
-        STATUS:
+        STATUS_processo:
           type: string
-          nullable: true
-    Documento:
-      type: object
-      properties:
-        ID_documento:
-          type: string
-        NOME_documento:
-          type: string
-          nullable: true
-        TIPO_documento:
-          type: string
-          nullable: true
+
+security:
+  - bearerAuth: []
+
 paths:
-  /advogados:
-    get:
-      summary: Listar advogados
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Lista de advogados
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Advogado'
+  /api/usuarios/register:
     post:
-      summary: Criar advogado
-      security:
-        - BearerAuth: []
+      summary: Cria um novo usuário
+      tags: [Usuários]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+        '400':
+          description: Erro na criação do usuário - Não preencheu todos os campos ou email já existe
+
+  /api/usuarios/login:
+    post:
+      summary: Realiza login e retorna um token JWT
+      tags: [Usuários]
       requestBody:
         required: true
         content:
@@ -150,327 +129,321 @@ paths:
             schema:
               type: object
               properties:
-                NOME_advogado: { type: string }
-                CPF_advogado: { type: string }
-                OAB_advogado: { type: string }
-                DTNSC_advogado: { type: string, format: date }
-                TEL_advogado: { type: string }
-                EMAIL_advogado: { type: string }
+                email:
+                  type: string
+                senha:
+                  type: string
+      responses:
+        '200':
+          description: Login bem-sucedido com token JWT
+        '400':
+          description: Usuário não encontrado
+        '401':
+          description: Senha incorreta
+
+  /api/trocar-senha:
+    patch:
+      summary: Permite ao usuário AUTENTICADO trocar sua senha
+      tags: [Usuários]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senhaAtual:
+                  type: string
+                senhaNova:
+                  type: string
+      responses:
+        '200':
+          description: Senha alterada com sucesso
+        '400':
+          description: Erro na alteração da senha - campos faltando, nova senha muito curta ou nova senha igual à atual
+        '401':
+          description: Senha atual incorreta ou token inválido
+        '404':
+          description: Usuário não encontrado
+
+  /api/clientes:
+    get:
+      summary: Lista todos os clientes
+      tags: [Clientes]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de clientes retornada com sucesso
+    post:
+      summary: Cria um novo cliente (com endereço opcional)
+      tags: [Clientes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cliente'
       responses:
         '201':
-          description: Advogado criado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Advogado'
-  /advogados/{id}:
+          description: Cliente criado com sucesso
+
+  /api/clientes/{id}:
     get:
-      summary: Obter advogado por ID
+      summary: Busca um cliente por ID
+      tags: [Clientes]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Advogado encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Advogado'
-        '404': { description: 'Não encontrado' }
-    patch:
-      summary: Atualizar advogado parcialmente
+          description: Cliente encontrado
+    put:
+      summary: Atualiza os dados de um cliente
+      tags: [Clientes]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
-          schema: { type: string }
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-      responses:
-        '200':
-          description: Advogado atualizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Advogado'
-    delete:
-      summary: Remover advogado
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '204': { description: 'Removido' }
-
-  /clientes:
-    get:
-      summary: Listar clientes (inclui endereço)
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Lista de clientes
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Cliente'
-    post:
-      summary: Criar cliente (opcionalmente cria endereço)
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nome: { type: string }
-                rg: { type: string }
-                cpf: { type: string }
-                dtnsc: { type: string, format: date }
-                email: { type: string }
-                tel: { type: string }
-                ocupacao: { type: string }
-                justgrat: { type: boolean }
-                nmrend: { type: string }
-                numero: { type: string }
-                endereco:
-                  type: object
-                  properties:
-                    RUA: { type: string }
-                    BAIRRO: { type: string }
-                    CIDADE: { type: string }
-                    ESTADO: { type: string }
-      responses:
-        '201':
-          description: Cliente criado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cliente'
-  /clientes/{id}:
-    get:
-      summary: Obter cliente por ID (inclui endereço e processos)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200':
-          description: Cliente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cliente'
-        '404': { description: 'Não encontrado' }
-    patch:
-      summary: Atualizar cliente
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
+              $ref: '#/components/schemas/Cliente'
       responses:
         '200':
           description: Cliente atualizado
-  /documentos:
-    get:
-      summary: Listar documentos
+    delete:
+      summary: Exclui um cliente
+      tags: [Clientes]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Cliente removido
+
+  /api/advogados:
+    get:
+      summary: Lista todos os advogados
+      tags: [Advogados]
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Lista de documentos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Documento'
+          description: Lista de advogados
     post:
-      summary: Criar documento e vincular a processo
+      summary: Cria um novo advogado
+      tags: [Advogados]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nome: { type: string }
-                tipo: { type: string }
-                numero_processo: { type: string }
+              $ref: '#/components/schemas/Advogado'
       responses:
         '201':
-          description: Documento criado
-  /documentos/{id}:
+          description: Advogado criado com sucesso
+
+  /api/advogados/{id}:
     get:
-      summary: Obter documento por ID
+      summary: Busca advogado por ID
+      tags: [Advogados]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
+        - in: path
+          name: id
+          schema:
+            type: string
       responses:
         '200':
-          description: Documento
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Documento'
-  /enderecos:
-    get:
-      summary: Listar endereços (inclui clientes)
+          description: Advogado encontrado
+    patch:
+      summary: Atualiza parcialmente o advogado (por exemplo, status)
+      tags: [Advogados]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advogado'
+      responses:
+        '200':
+          description: Advogado atualizado
+    delete:
+      summary: Remove um advogado
+      tags: [Advogados]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Advogado excluído
+
+  /api/enderecos:
+    get:
+      summary: Lista todos os endereços
+      tags: [Endereços]
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Lista de endereços
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Endereco'
     post:
-      summary: Criar endereço
+      summary: Cria um novo endereço
+      tags: [Endereços]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RUA: { type: string }
-                BAIRRO: { type: string }
-                CIDADE: { type: string }
-                ESTADO: { type: string }
+              $ref: '#/components/schemas/Endereco'
       responses:
         '201':
           description: Endereço criado
-  /enderecos/{id}:
+
+  /api/enderecos/{id}:
     get:
-      summary: Obter endereço por ID (inclui clientes)
+      summary: Busca um endereço por ID
+      tags: [Endereços]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
+        - in: path
+          name: id
+          schema:
+            type: string
       responses:
         '200':
-          description: Endereço
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Endereco'
-  /locais:
-    get:
-      summary: Listar locais
+          description: Endereço encontrado
+    put:
+      summary: Atualiza um endereço
+      tags: [Endereços]
       security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Lista de locais
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-  /locais:
-    post:
-      summary: Criar local
-      security:
-        - BearerAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                NOME_local: { type: string }
-                Enderecos_ID_endereco: { type: string }
+              $ref: '#/components/schemas/Endereco'
       responses:
-        '201':
-          description: Local criado
-  /processos:
-    get:
-      summary: Listar processos
+        '200':
+          description: Endereço atualizado
+    delete:
+      summary: Exclui um endereço
+      tags: [Endereços]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Endereço removido
+
+  /api/processos:
+    get:
+      summary: Lista todos os processos
+      tags: [Processos]
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Lista de processos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Processo'
-  /processos/{id}:
-    get:
-      summary: Obter processo por ID
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200':
-          description: Processo
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Processo'
-  /processos:
     post:
-      summary: Criar processo
+      summary: Cria um novo processo
+      tags: [Processos]
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                NUMERO_processo: { type: string }
-                DESCRICAO: { type: string }
-                STATUS: { type: string }
-                Locais_ID_local: { type: string }
+              $ref: '#/components/schemas/Processo'
       responses:
         '201':
           description: Processo criado
-security:
-  - BearerAuth: []
+
+  /api/processos/{id}:
+    get:
+      summary: Busca processo por ID
+      tags: [Processos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Processo encontrado
+    put:
+      summary: Atualiza um processo
+      tags: [Processos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Processo'
+      responses:
+        '200':
+          description: Processo atualizado
+    delete:
+      summary: Exclui um processo
+      tags: [Processos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Processo removido
