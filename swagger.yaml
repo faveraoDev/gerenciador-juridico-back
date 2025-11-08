@@ -1,0 +1,476 @@
+openapi: 3.0.3
+info:
+  title: Gerenciador Backend API
+  version: 1.0.0
+  description: >-
+    Documentação OpenAPI (Swagger) para o backend do Gerenciador de Arquivos Jurídicos. Inclui endpoints principais para advogados, clientes, processos,
+    documentos, endereços e locais.
+servers:
+  - url: http://localhost:4000/api
+    description: Local de desenvolvimento
+  - url: https://gerenciador-juridico-back.onrender.com/api
+    description: Servidor de produção
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Advogado:
+      type: object
+      properties:
+        ID_advogado:
+          type: string
+        NOME_advogado:
+          type: string
+          nullable: true
+        CPF_advogado:
+          type: string
+          nullable: true
+        OAB_advogado:
+          type: string
+          nullable: true
+        DTNSC_advogado:
+          type: string
+          format: date-time
+          nullable: true
+        EMAIL_advogado:
+          type: string
+          nullable: true
+        TEL_advogado:
+          type: string
+          nullable: true
+        STATUS_advogado:
+          type: boolean
+          nullable: true
+    Cliente:
+      type: object
+      properties:
+        ID_cliente:
+          type: string
+        NOME_cliente:
+          type: string
+        RG_cliente:
+          type: string
+          nullable: true
+        CPF_cliente:
+          type: string
+          nullable: true
+        DTNSC_cliente:
+          type: string
+          format: date-time
+          nullable: true
+        EMAIL_cliente:
+          type: string
+          nullable: true
+        TEL_cliente:
+          type: string
+          nullable: true
+        OCUPACAO_cliente:
+          type: string
+          nullable: true
+        JUSTGRAT_cliente:
+          type: boolean
+          nullable: true
+        NMREND_cliente:
+          type: string
+          nullable: true
+        NUMERO_residencia:
+          type: string
+          nullable: true
+        Enderecos_ID_endereco:
+          type: string
+          nullable: true
+    Endereco:
+      type: object
+      properties:
+        ID_endereco:
+          type: string
+        RUA:
+          type: string
+          nullable: true
+        BAIRRO:
+          type: string
+          nullable: true
+        CIDADE:
+          type: string
+          nullable: true
+        ESTADO:
+          type: string
+          nullable: true
+    Processo:
+      type: object
+      properties:
+        ID_processo:
+          type: string
+        NUMERO_processo:
+          type: string
+          nullable: true
+        DESCRICAO:
+          type: string
+          nullable: true
+        STATUS:
+          type: string
+          nullable: true
+    Documento:
+      type: object
+      properties:
+        ID_documento:
+          type: string
+        NOME_documento:
+          type: string
+          nullable: true
+        TIPO_documento:
+          type: string
+          nullable: true
+paths:
+  /advogados:
+    get:
+      summary: Listar advogados
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de advogados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Advogado'
+    post:
+      summary: Criar advogado
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NOME_advogado: { type: string }
+                CPF_advogado: { type: string }
+                OAB_advogado: { type: string }
+                DTNSC_advogado: { type: string, format: date }
+                TEL_advogado: { type: string }
+                EMAIL_advogado: { type: string }
+      responses:
+        '201':
+          description: Advogado criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advogado'
+  /advogados/{id}:
+    get:
+      summary: Obter advogado por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Advogado encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advogado'
+        '404': { description: 'Não encontrado' }
+    patch:
+      summary: Atualizar advogado parcialmente
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Advogado atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advogado'
+    delete:
+      summary: Remover advogado
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: 'Removido' }
+
+  /clientes:
+    get:
+      summary: Listar clientes (inclui endereço)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cliente'
+    post:
+      summary: Criar cliente (opcionalmente cria endereço)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome: { type: string }
+                rg: { type: string }
+                cpf: { type: string }
+                dtnsc: { type: string, format: date }
+                email: { type: string }
+                tel: { type: string }
+                ocupacao: { type: string }
+                justgrat: { type: boolean }
+                nmrend: { type: string }
+                numero: { type: string }
+                endereco:
+                  type: object
+                  properties:
+                    RUA: { type: string }
+                    BAIRRO: { type: string }
+                    CIDADE: { type: string }
+                    ESTADO: { type: string }
+      responses:
+        '201':
+          description: Cliente criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+  /clientes/{id}:
+    get:
+      summary: Obter cliente por ID (inclui endereço e processos)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Cliente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '404': { description: 'Não encontrado' }
+    patch:
+      summary: Atualizar cliente
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        '200':
+          description: Cliente atualizado
+  /documentos:
+    get:
+      summary: Listar documentos
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de documentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Documento'
+    post:
+      summary: Criar documento e vincular a processo
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome: { type: string }
+                tipo: { type: string }
+                numero_processo: { type: string }
+      responses:
+        '201':
+          description: Documento criado
+  /documentos/{id}:
+    get:
+      summary: Obter documento por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Documento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Documento'
+  /enderecos:
+    get:
+      summary: Listar endereços (inclui clientes)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de endereços
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Endereco'
+    post:
+      summary: Criar endereço
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                RUA: { type: string }
+                BAIRRO: { type: string }
+                CIDADE: { type: string }
+                ESTADO: { type: string }
+      responses:
+        '201':
+          description: Endereço criado
+  /enderecos/{id}:
+    get:
+      summary: Obter endereço por ID (inclui clientes)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Endereço
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Endereco'
+  /locais:
+    get:
+      summary: Listar locais
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de locais
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /locais:
+    post:
+      summary: Criar local
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NOME_local: { type: string }
+                Enderecos_ID_endereco: { type: string }
+      responses:
+        '201':
+          description: Local criado
+  /processos:
+    get:
+      summary: Listar processos
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de processos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Processo'
+  /processos/{id}:
+    get:
+      summary: Obter processo por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Processo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Processo'
+  /processos:
+    post:
+      summary: Criar processo
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                NUMERO_processo: { type: string }
+                DESCRICAO: { type: string }
+                STATUS: { type: string }
+                Locais_ID_local: { type: string }
+      responses:
+        '201':
+          description: Processo criado
+security:
+  - BearerAuth: []

@@ -4,14 +4,14 @@ import dotenv from 'dotenv';
 import apiRouter from './routes';
 import { autenticar } from "./middleware/authMiddleware";
 import usuariosRouter from "./routes/usuarios";
+import swaggerRoutes from './swagger';
 
 dotenv.config();
 
 const app = express();
 app.use(cors({ origin: true }));
 app.use(express.json());
-
-// app.use('/api', apiRouter); -> Rotas sem proteção
+app.use('/api-docs', swaggerRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.get("/", (req, res) => {
