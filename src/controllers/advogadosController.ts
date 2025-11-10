@@ -15,7 +15,7 @@ export const getAdvogado = async (req: Request, res: Response) => {
 
 export const createAdvogado = async (req: Request, res: Response) => {
   try {
-    const { nome, cpf, oab, dtnsc, tel, email } = req.body;
+    const { nome, cpf, oab, dtnsc, tel, email, status } = req.body;
 
     // Valida e converte a data de nascimento
     const dataNascimento = dtnsc ? new Date(dtnsc) : null;
@@ -27,7 +27,8 @@ export const createAdvogado = async (req: Request, res: Response) => {
         OAB_advogado: oab,
         DTNSC_advogado: dataNascimento,
         TEL_advogado: tel,
-        EMAIL_advogado: email
+        EMAIL_advogado: email,
+        STATUS_advogado: status
       },
     });
 
