@@ -58,7 +58,7 @@ model Processo {
   STATUS_processo         String?
   DATAINICIO_processo     DateTime?
   Locais_ID_local    String?
-  local              Locais?                @relation(fields: [Locais_ID_local], references: [ID_local])
+  local              Locais?                @relation(fields: [Locais_ID_local], references: [ID_local], onDelete: SetNull)
   documentos         DocumentoProcesso[]
   clientes           ProcessosHasClientes[]
   ProcessosHasLocais ProcessosHasLocais[]
