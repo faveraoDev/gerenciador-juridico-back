@@ -8,10 +8,14 @@ const JWT_SECRET = process.env.JWT_SECRET || "segredo_super_secreto";
 // Registrar novo usuário
 export const register = async (req: Request, res: Response) => {
   try {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, codigo } = req.body;
 
     if (!nome || !email || !senha) {
       return res.status(400).json({ error: "Nome, email e senha são obrigatórios." });
+    }
+
+    if (!codigo || codigo !== process.env.CODIGO_CADASTRO_USER) {
+      return res.status(403).json({ error: "Código de cadastro inválido." });
     }
 
     const existente = await prisma.usuario.findUnique({
