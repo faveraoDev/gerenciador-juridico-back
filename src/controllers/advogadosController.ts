@@ -17,12 +17,15 @@ export const createAdvogado = async (req: Request, res: Response) => {
   try {
     const { nome, cpf, oab, dtnsc, tel, email } = req.body;
 
+    const dataNascimento = dtnsc ? new Date(dtnsc) : null;
+
+    // Valida e converte a data de nascimento
     const created = await prisma.advogado.create({
       data: {
         NOME_advogado: nome,
         CPF_advogado: cpf,
         OAB_advogado: oab,
-        DTNSC_advogado: new Date(dtnsc),
+        DTNSC_advogado: dataNascimento,
         TEL_advogado: tel,
         EMAIL_advogado: email
       },

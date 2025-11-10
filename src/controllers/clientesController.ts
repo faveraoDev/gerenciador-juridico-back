@@ -49,12 +49,15 @@ export const createCliente = async (req: Request, res: Response) => {
       }
     }
 
+    // Valida e converte a data de nascimento
+    const dataNascimento = dtnsc ? new Date(dtnsc) : null;
+
     const novoCliente = await prisma.cliente.create({
       data: {
         NOME_cliente: nome,
         RG_cliente: rg,
         CPF_cliente: cpf,
-        DTNSC_cliente: new Date(dtnsc),
+        DTNSC_cliente: dataNascimento,
         EMAIL_cliente: email,
         TEL_cliente: tel,
         OCUPACAO_cliente: ocupacao,
