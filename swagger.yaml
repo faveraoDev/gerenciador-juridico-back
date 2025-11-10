@@ -193,7 +193,7 @@ paths:
         '401':
           description: Senha incorreta
 
-  /api/trocar-senha:
+  /api/usuarios/trocar-senha:
     patch:
       summary: Permite ao usuário AUTENTICADO trocar sua senha
       tags: [Usuários]
