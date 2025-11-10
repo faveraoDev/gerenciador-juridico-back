@@ -953,7 +953,7 @@ paths:
         '400':
           description: Erro na remoção do local
 
-  /api/documentos
+  /api/documentos:
     get:
       summary: Lista todos os documentos
       tags: [Documentos]
