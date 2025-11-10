@@ -30,11 +30,14 @@ export const createDocumento = async (req: Request, res: Response) => {
       });
     }
 
+    // Valida e converte a data do documento
+    const dataDocumento = data ? new Date(data) : null;
+
     // Cria o documento e associa ao processo usando o ID interno
     const novoDoc = await prisma.documento.create({
       data: {
         TIPO_documento: tipo,
-        DATA_documento: new Date(data),
+        DATA_documento: dataDocumento,
         DESC_documento: desc,
         processos: {
           create: {
