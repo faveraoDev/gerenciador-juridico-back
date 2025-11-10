@@ -462,6 +462,8 @@ paths:
                   type: string
                 email:
                   type: string
+                status:
+                  type: boolean
       responses:
         '201':
           description: Advogado criado com sucesso
