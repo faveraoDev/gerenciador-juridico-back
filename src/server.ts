@@ -9,7 +9,10 @@ import swaggerRoutes from './swagger';
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: true }));
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://gaj-gerenciador-juridico.vercel.app/'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use('/api-docs', swaggerRoutes);
 
