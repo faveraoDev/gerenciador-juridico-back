@@ -156,7 +156,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Usuario'
+              type: object
+              properties:
+                nome:
+                  type: string
+                email:
+                  type: string
+                senha:
+                  type: string
       responses:
         '201':
           description: Usuário criado com sucesso
@@ -232,7 +239,44 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Cliente'
+              type: object
+              properties:
+                nome:
+                  type: string
+                rg:
+                  type: string
+                cpf:
+                  type: string
+                dtnsc:
+                  type: string
+                  format: date
+                email:
+                  type: string
+                tel:
+                  type: string
+                ocupacao:
+                  type: string
+                justgrat:
+                  type: boolean
+                nmrend:
+                  type: string
+                compl:
+                  type: string
+                endereco:
+                  type: object
+                  properties:
+                    cep:
+                      type: string
+                    lgdr:
+                      type: string
+                    nome:
+                      type: string
+                    uf:
+                      type: string
+                    bairro:
+                      type: string
+                    cidade:
+                      type: string
       responses:
         '201':
           description: Cliente criado com sucesso
@@ -269,7 +313,44 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Cliente'
+              type: object
+              properties:
+                nome:
+                  type: string
+                rg:
+                  type: string
+                cpf:
+                  type: string
+                dtnsc:
+                  type: string
+                  format: date
+                email:
+                  type: string
+                tel:
+                  type: string
+                ocupacao:
+                  type: string
+                justgrat:
+                  type: boolean
+                nmrend:
+                  type: string
+                compl:
+                  type: string
+                endereco:
+                  type: object
+                  properties:
+                    cep:
+                      type: string
+                    lgdr:
+                      type: string
+                    nome:
+                      type: string
+                    uf:
+                      type: string
+                    bairro:
+                      type: string
+                    cidade:
+                      type: string
       responses:
         '200':
           description: Cliente atualizado
@@ -289,7 +370,44 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Cliente'
+              $type: object
+              properties:
+                nome:
+                  type: string
+                rg:
+                  type: string
+                cpf:
+                  type: string
+                dtnsc:
+                  type: string
+                  format: date
+                email:
+                  type: string
+                tel:
+                  type: string
+                ocupacao:
+                  type: string
+                justgrat:
+                  type: boolean
+                nmrend:
+                  type: string
+                compl:
+                  type: string
+                endereco:
+                  type: object
+                  properties:
+                    cep:
+                      type: string
+                    lgdr:
+                      type: string
+                    nome:
+                      type: string
+                    uf:
+                      type: string
+                    bairro:
+                      type: string
+                    cidade:
+                      type: string
       responses:
         '200':
           description: Cliente atualizado parcialmente
@@ -327,7 +445,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Advogado'
+              type: object
+              properties:
+                nome:
+                  type: string
+                cpf:
+                  type: string
+                oab:
+                  type: string
+                dtnsc:
+                  type: string
+                  format: date
+                tel:
+                  type: string
+                email:
+                  type: string
       responses:
         '201':
           description: Advogado criado com sucesso
@@ -363,7 +495,21 @@ paths:
         content:      
           application/json:
             schema:
-              $ref: '#/components/schemas/Advogado'
+              type: object
+              properties:
+                nome:
+                  type: string
+                cpf:
+                  type: string
+                oab:
+                  type: string
+                dtnsc:
+                  type: string
+                  format: date
+                tel:
+                  type: string
+                email:
+                  type: string
       responses:
         '200':
           description: Advogado atualizado
@@ -384,7 +530,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Advogado'
+              type: object
+              properties:
+                nome:
+                  type: string
+                cpf:
+                  type: string
+                oab:
+                  type: string
+                dtnsc:
+                  type: string
+                  format: date
+                tel:
+                  type: string
+                email:
+                  type: string
       responses:
         '200':
           description: Advogado atualizado
@@ -420,7 +580,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Endereco'
+              type: object
+              properties:
+                cep:
+                  type: string
+                lgdr:
+                  type: string
+                nome:
+                  type: string
+                uf:
+                  type: string
+                bairro:
+                  type: string
+                cidade:
+                  type: string
       responses:
         '201':
           description: Endereço criado
@@ -457,7 +630,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Endereco'
+              type: object
+              properties:
+                cep:
+                  type: string
+                lgdr:
+                  type: string
+                nome:
+                  type: string
+                uf:
+                  type: string
+                bairro:
+                  type: string
+                cidade:
+                  type: string
       responses:
         '200':
           description: Endereço atualizado
@@ -478,7 +664,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Endereco'
+              type: object
+              properties:
+                cep:
+                  type: string
+                lgdr:
+                  type: string
+                nome:
+                  type: string
+                uf:
+                  type: string
+                bairro:
+                  type: string
+                cidade:
+                  type: string
       responses:
         '200':
           description: Endereço atualizado
@@ -519,7 +718,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Processo'
+              type: object
+              properties:
+                numeroProcesso:
+                  type: string
+                datainicio:
+                  type: string
+                  format: date
+                cpfCliente:
+                  type: string
+                oabAdvogado:
+                  type: string
+                status:
+                  type: string
+                nomeLocal:
+                  type: string
       responses:
         '201':
           description: Processo criado
@@ -560,7 +773,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Processo'
+              type: object
+              properties:
+                numeroProcesso:
+                  type: string
+                datainicio:
+                  type: string
+                  format: date
+                cpfCliente:
+                  type: string
+                oabAdvogado:
+                  type: string
+                status:
+                  type: string
+                nomeLocal:
+                  type: string
       responses:
         '200':
           description: Processo atualizado
@@ -581,7 +808,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Processo'
+              type: object
+              properties:
+                numeroProcesso:
+                  type: string
+                datainicio:
+                  type: string
+                  format: date
+                cpfCliente:
+                  type: string
+                oabAdvogado:
+                  type: string
+                status:
+                  type: string
+                nomeLocal:
+                  type: string
       responses:
         '200':
           description: Processo atualizado
@@ -624,7 +865,7 @@ paths:
             schema:
               type: object
               properties:
-                NOME_local:
+                nome:
                   type: string
       responses:
         '201':
@@ -664,7 +905,7 @@ paths:
             schema:
               type: object
               properties: 
-                NOME_local:
+                nome:
                   type: string
       responses:
         '200':
@@ -688,7 +929,7 @@ paths:
             schema:
               type: object
               properties: 
-                NOME_local:
+                nome:
                   type: string
       responses:
         '200':
