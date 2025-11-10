@@ -85,12 +85,15 @@ export const createProcesso = async (req: Request, res: Response) => {
       });
     }
 
+    // Valida e converte a data de início
+    const dataValidada = dataInicio ? new Date(dataInicio) : null;
+
     // Criar o processo com todas as associações
     const novoProcesso = await prisma.processo.create({
       data: {
         NUMERO_processo: numeroProcesso,
         STATUS_processo: status,
-        DATAINICIO_processo: new Date(dataInicio),
+        DATAINICIO_processo: dataValidada,
         Locais_ID_local: local.ID_local,
         // Associar cliente
         clientes: {
