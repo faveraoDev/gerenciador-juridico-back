@@ -164,6 +164,8 @@ paths:
                   type: string
                 senha:
                   type: string
+                codigo:
+                  type: string
       responses:
         '201':
           description: Usuário criado com sucesso
