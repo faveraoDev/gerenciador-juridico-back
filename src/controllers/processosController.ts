@@ -139,72 +139,78 @@ export const createProcesso = async (req: Request, res: Response) => {
 };
 
 export const updateProcesso = async (req: Request, res: Response) => {
-  const { CPF_cliente, OAB_advogado, NOME_local, NUMERO_processo, STATUS_processo, DATAINICIO_processo } = req.body;
-  const id = req.params.id;
-
   try {
-    const dataToUpdate: any = {};
+    const id = req.params.id;
+    const { numeroProcesso, status, dataInicio, cpfCliente, oabAdvogado, nomeLocal } = req.body;
 
-    if (NUMERO_processo) dataToUpdate.NUMERO_processo = NUMERO_processo;
-    if (STATUS_processo) dataToUpdate.STATUS_processo = STATUS_processo;
-    if (DATAINICIO_processo) dataToUpdate.DATAINICIO_processo = new Date(DATAINICIO_processo);
+    // 🔹 Buscar cliente, advogado e local (se enviados)
+    let cliente, advogado, local;
 
-    // Atualizar local, se informado
-    if (NOME_local) {
-      const local = await prisma.locais.findFirst({ where: { NOME_local } });
-      if (!local) return res.status(404).json({ error: 'Local não encontrado' });
-      dataToUpdate.Locais_ID_local = local.ID_local;
+    if (cpfCliente) {
+      cliente = await prisma.cliente.findFirst({ where: { CPF_cliente: cpfCliente } });
+      if (!cliente) return res.status(404).json({ error: 'Cliente não encontrado' });
     }
 
-    // Atualizar cliente e advogado (relacionamento)
-    if (CPF_cliente || OAB_advogado) {
-      const cliente = CPF_cliente ? await prisma.cliente.findUnique({ where: { CPF_cliente } }) : null;
-      const advogado = OAB_advogado ? await prisma.advogado.findUnique({ where: { OAB_advogado } }) : null;
-
-      if (CPF_cliente && !cliente)
-        return res.status(404).json({ error: 'Cliente não encontrado' });
-      if (OAB_advogado && !advogado)
-        return res.status(404).json({ error: 'Advogado não encontrado' });
-
-      // Remove os vínculos antigos e recria com os novos (garantindo consistência)
-      await prisma.processosHasClientes.deleteMany({ where: { Processos_ID_processo: id } });
-
-      if (cliente) {
-        await prisma.processosHasClientes.create({
-          data: {
-            Processos_ID_processo: id,
-            Clientes_ID_cliente: cliente.ID_cliente,
-            advogados: advogado
-              ? {
-                  create: { Advogados_ID_advogado: advogado.ID_advogado }
-                }
-              : undefined
-          }
-        });
-      }
+    if (oabAdvogado) {
+      advogado = await prisma.advogado.findFirst({ where: { OAB_advogado: oabAdvogado } });
+      if (!advogado) return res.status(404).json({ error: 'Advogado não encontrado' });
     }
 
-    const processoAtualizado = await prisma.processo.update({
+    if (nomeLocal) {
+      local = await prisma.locais.findFirst({ where: { NOME_local: nomeLocal } });
+      if (!local) local = await prisma.locais.create({ data: { NOME_local: nomeLocal } });
+    }
+
+    // 🔹 Atualiza dados principais
+    const updated = await prisma.processo.update({
       where: { ID_processo: id },
-      data: dataToUpdate,
-      include: {
-        local: true,
-        clientes: {
-          include: {
-            cliente: true,
-            advogados: { include: { advogado: true } }
-          }
-        }
+      data: {
+        NUMERO_processo: numeroProcesso,
+        STATUS_processo: status,
+        DATAINICIO_processo: dataInicio ? new Date(dataInicio) : undefined,
+        Locais_ID_local: local?.ID_local
       }
     });
 
-    res.status(200).json({
-      message: 'Processo atualizado com sucesso',
-      processo: processoAtualizado
+    // 🔹 Atualiza vínculos (se necessário)
+    if (cliente) {
+      await prisma.processosHasClientes.deleteMany({
+        where: { Processos_ID_processo: id }
+      });
+      await prisma.processosHasClientes.create({
+        data: {
+          Processos_ID_processo: id,
+          Clientes_ID_cliente: cliente.ID_cliente
+        }
+      });
+    }
+
+    if (advogado && cliente) {
+      await prisma.advogadoProcessoCliente.deleteMany({
+        where: { Processos_ID_processo: id }
+      });
+      await prisma.advogadoProcessoCliente.create({
+        data: {
+          Advogados_ID_advogado: advogado.ID_advogado,
+          Processos_ID_processo: id,
+          Clientes_ID_cliente: cliente.ID_cliente
+        }
+      });
+    }
+
+    // 🔹 Retorna o processo atualizado completo
+    const processoFinal = await prisma.processo.findUnique({
+      where: { ID_processo: id },
+      include: {
+        documentos: true,
+        clientes: { include: { cliente: true } },
+        ProcessosHasLocais: { include: { local: true } }
+      }
     });
+
+    res.json(processoFinal);
   } catch (err: any) {
-    console.error('Erro ao atualizar processo:', err);
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
