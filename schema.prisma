@@ -114,12 +114,12 @@ model AdvogadoProcessoCliente {
 
 model Endereco {
   ID_endereco String  @id @default(uuid())
-  CEP_endereco      String
-  LGDR_endereco     String
-  NOME_endereco     String
-  UF_endereco       String
-  BAIRRO_endereco   String
-  CIDADE_endereco   String
+  CEP_endereco      String?
+  LGDR_endereco     String?
+  NOME_endereco     String?
+  UF_endereco       String?
+  BAIRRO_endereco   String?
+  CIDADE_endereco   String?
 
   clientes Cliente[]
 
