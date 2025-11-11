@@ -17,10 +17,10 @@ export const createCliente = async (req: Request, res: Response) => {
   try {
     const { nome, rg, cpf, dtnsc, email, tel, ocupacao, justgrat, nmrend, compl, endereco } = req.body;
 
-    let enderecoID;
+    let enderecoID: string | null = null;
 
+    // Criação ou reutilização de endereço (opcional)
     if (endereco) {
-      // procura um endereço existente com mesmos dados
       const existente = await prisma.endereco.findFirst({
         where: {
           CEP_endereco: endereco.cep,
@@ -28,8 +28,8 @@ export const createCliente = async (req: Request, res: Response) => {
           NOME_endereco: endereco.nome,
           UF_endereco: endereco.uf,
           BAIRRO_endereco: endereco.bairro,
-          CIDADE_endereco: endereco.cidade
-        }
+          CIDADE_endereco: endereco.cidade,
+        },
       });
 
       if (existente) {
@@ -37,40 +37,43 @@ export const createCliente = async (req: Request, res: Response) => {
       } else {
         const novoEnd = await prisma.endereco.create({
           data: {
-            CEP_endereco: endereco.cep,
-            LGDR_endereco: endereco.lgdr,
-            NOME_endereco: endereco.nome,
-            UF_endereco: endereco.uf,
-            BAIRRO_endereco: endereco.bairro,
-            CIDADE_endereco: endereco.cidade
+            CEP_endereco: endereco.cep ?? null,
+            LGDR_endereco: endereco.lgdr ?? null,
+            NOME_endereco: endereco.nome ?? null,
+            UF_endereco: endereco.uf ?? null,
+            BAIRRO_endereco: endereco.bairro ?? null,
+            CIDADE_endereco: endereco.cidade ?? null,
           },
         });
         enderecoID = novoEnd.ID_endereco;
       }
     }
 
-    // Valida e converte a data de nascimento
     const dataNascimento = dtnsc ? new Date(dtnsc) : null;
 
+    // 🔹 Montagem dinâmica dos campos
+    const data: any = {
+      NOME_cliente: nome,
+      ...(rg && { RG_cliente: rg }),
+      ...(cpf && { CPF_cliente: cpf }),
+      ...(dataNascimento && { DTNSC_cliente: dataNascimento }),
+      ...(email && { EMAIL_cliente: email }),
+      ...(tel && { TEL_cliente: tel }),
+      ...(ocupacao && { OCUPACAO_cliente: ocupacao }),
+      ...(justgrat !== undefined && { JUSTGRAT_cliente: justgrat }),
+      ...(nmrend && { NMREND_cliente: nmrend }),
+      ...(compl && { COMPL_cliente: compl }),
+      ...(enderecoID && { Enderecos_ID_endereco: enderecoID }),
+    };
+
     const novoCliente = await prisma.cliente.create({
-      data: {
-        NOME_cliente: nome,
-        RG_cliente: rg,
-        CPF_cliente: cpf,
-        DTNSC_cliente: dataNascimento,
-        EMAIL_cliente: email,
-        TEL_cliente: tel,
-        OCUPACAO_cliente: ocupacao,
-        JUSTGRAT_cliente: justgrat,
-        NMREND_cliente: nmrend,
-        COMPL_cliente: compl,
-        Enderecos_ID_endereco: enderecoID
-      },
-      include: { endereco: true }
+      data,
+      include: { endereco: true },
     });
 
-    res.json(novoCliente);
+    res.status(201).json(novoCliente);
   } catch (err: any) {
+    console.error(err);
     res.status(400).json({ error: err.message });
   }
 };
@@ -89,13 +92,12 @@ export const updateCliente = async (req: Request, res: Response) => {
       justgrat,
       nmrend,
       compl,
-      endereco
+      endereco,
     } = req.body;
 
-    let enderecoID;
+    let enderecoID: string | null = null;
 
     if (endereco) {
-      // Verifica se já existe um endereço igual no banco
       const existente = await prisma.endereco.findFirst({
         where: {
           CEP_endereco: endereco.cep,
@@ -103,8 +105,8 @@ export const updateCliente = async (req: Request, res: Response) => {
           NOME_endereco: endereco.nome,
           UF_endereco: endereco.uf,
           BAIRRO_endereco: endereco.bairro,
-          CIDADE_endereco: endereco.cidade
-        }
+          CIDADE_endereco: endereco.cidade,
+        },
       });
 
       if (existente) {
@@ -112,12 +114,12 @@ export const updateCliente = async (req: Request, res: Response) => {
       } else {
         const novoEnd = await prisma.endereco.create({
           data: {
-            CEP_endereco: endereco.cep,
-            LGDR_endereco: endereco.lgdr,
-            NOME_endereco: endereco.nome,
-            UF_endereco: endereco.uf,
-            BAIRRO_endereco: endereco.bairro,
-            CIDADE_endereco: endereco.cidade
+            CEP_endereco: endereco.cep ?? null,
+            LGDR_endereco: endereco.lgdr ?? null,
+            NOME_endereco: endereco.nome ?? null,
+            UF_endereco: endereco.uf ?? null,
+            BAIRRO_endereco: endereco.bairro ?? null,
+            CIDADE_endereco: endereco.cidade ?? null,
           },
         });
         enderecoID = novoEnd.ID_endereco;
@@ -126,26 +128,30 @@ export const updateCliente = async (req: Request, res: Response) => {
 
     const dataNascimento = dtnsc ? new Date(dtnsc) : null;
 
+    // 🔹 Montagem dinâmica
+    const data: any = {
+      ...(nome && { NOME_cliente: nome }),
+      ...(rg && { RG_cliente: rg }),
+      ...(cpf && { CPF_cliente: cpf }),
+      ...(dataNascimento && { DTNSC_cliente: dataNascimento }),
+      ...(email && { EMAIL_cliente: email }),
+      ...(tel && { TEL_cliente: tel }),
+      ...(ocupacao && { OCUPACAO_cliente: ocupacao }),
+      ...(justgrat !== undefined && { JUSTGRAT_cliente: justgrat }),
+      ...(nmrend && { NMREND_cliente: nmrend }),
+      ...(compl && { COMPL_cliente: compl }),
+      ...(enderecoID && { Enderecos_ID_endereco: enderecoID }),
+    };
+
     const updatedCliente = await prisma.cliente.update({
       where: { ID_cliente: id },
-      data: {
-        NOME_cliente: nome,
-        RG_cliente: rg,
-        CPF_cliente: cpf,
-        DTNSC_cliente: dataNascimento,
-        EMAIL_cliente: email,
-        TEL_cliente: tel,
-        OCUPACAO_cliente: ocupacao,
-        JUSTGRAT_cliente: justgrat,
-        NMREND_cliente: nmrend,
-        COMPL_cliente: compl,
-        Enderecos_ID_endereco: enderecoID // Teste
-      },
-      include: { endereco: true }
+      data,
+      include: { endereco: true },
     });
 
     res.json(updatedCliente);
   } catch (err: any) {
+    console.error(err);
     res.status(400).json({ error: err.message });
   }
 };
