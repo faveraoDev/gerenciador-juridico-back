@@ -64,8 +64,59 @@ export const createDocumento = async (req: Request, res: Response) => {
 export const updateDocumento = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const updated = await prisma.documento.update({ where: { ID_documento: id }, data: req.body });
-    res.json(updated);
+    const { tipo, data, desc, numeroProcesso } = req.body;
+
+    let processoID: string | undefined;
+
+    // Se o número do processo foi informado, buscamos o ID correspondente
+    if (numeroProcesso) {
+      const processo = await prisma.processo.findFirst({
+        where: { NUMERO_processo: numeroProcesso }
+      });
+
+      if (!processo) {
+        return res.status(404).json({ 
+          error: 'Processo não encontrado',
+          message: `Nenhum processo encontrado com o número: ${numeroProcesso}`
+        });
+      }
+
+      processoID = processo.ID_processo;
+    }
+
+    // Converte a data, se enviada
+    const dataDocumento = data ? new Date(data) : undefined;
+
+    // Atualiza o documento principal
+    const updatedDoc = await prisma.documento.update({
+      where: { ID_documento: id },
+      data: {
+        TIPO_documento: tipo,
+        DATA_documento: dataDocumento,
+        DESC_documento: desc
+      },
+      include: {
+        processos: { include: { processo: true } }
+      }
+    });
+
+    // Se o processo for alterado, atualiza a associação na tabela intermediária
+    if (processoID) {
+      await prisma.documentoProcesso.updateMany({
+        where: { Documentos_ID_documento: id },
+        data: { Processos_ID_processo: processoID }
+      });
+    }
+
+    // Retorna o documento atualizado com o processo associado
+    const documentoFinal = await prisma.documento.findUnique({
+      where: { ID_documento: id },
+      include: {
+        processos: { include: { processo: true } }
+      }
+    });
+
+    res.json(documentoFinal);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
