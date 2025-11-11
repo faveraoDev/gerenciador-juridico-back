@@ -60,7 +60,7 @@ export const createCliente = async (req: Request, res: Response) => {
       ...(email && { EMAIL_cliente: email }),
       ...(tel && { TEL_cliente: tel }),
       ...(ocupacao && { OCUPACAO_cliente: ocupacao }),
-      ...(justgrat !== undefined && { JUSTGRAT_cliente: justgrat }),
+      JUSTGRAT_cliente: justgrat ?? null,
       ...(nmrend && { NMREND_cliente: nmrend }),
       ...(compl && { COMPL_cliente: compl }),
       ...(enderecoID && { Enderecos_ID_endereco: enderecoID }),
