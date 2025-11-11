@@ -139,7 +139,7 @@ export const updateCliente = async (req: Request, res: Response) => {
         JUSTGRAT_cliente: justgrat,
         NMREND_cliente: nmrend,
         COMPL_cliente: compl,
-        ...(enderecoID && { Enderecos_ID_endereco: enderecoID })
+        Enderecos_ID_endereco: enderecoID // Teste
       },
       include: { endereco: true }
     });
