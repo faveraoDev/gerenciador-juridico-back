@@ -41,9 +41,25 @@ export const createAdvogado = async (req: Request, res: Response) => {
 export const updateAdvogado = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const updated = await prisma.advogado.update({ where: { ID_advogado: id }, data: req.body });
+    const data = { ...req.body };
+
+    if (data.DTNSC_advogado) {
+      const parsed = new Date(data.DTNSC_advogado);
+      if (!isNaN(parsed.getTime())) {
+        data.DTNSC_advogado = parsed;
+      } else {
+        delete data.DTNSC_advogado; // evita quebrar se o valor for inválido
+      }
+    }
+
+    const updated = await prisma.advogado.update({
+      where: { ID_advogado: id },
+      data,
+    });
+
     res.json(updated);
   } catch (err: any) {
+    console.error(err);
     res.status(400).json({ error: err.message });
   }
 };
