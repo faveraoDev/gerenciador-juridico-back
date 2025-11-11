@@ -16,7 +16,7 @@ export const getLocal = async (req: Request, res: Response) => {
 };
 
 export const createLocal = async (req: Request, res: Response) => {
-  const { nome, capacidade } = req.body;
+  const { nome } = req.body;
   
   try {
     const novoLocal = await prisma.locais.create({
