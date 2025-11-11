@@ -78,8 +78,73 @@ export const createCliente = async (req: Request, res: Response) => {
 export const updateCliente = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const updated = await prisma.cliente.update({ where: { ID_cliente: id }, data: req.body });
-    res.json(updated);
+    const {
+      nome,
+      rg,
+      cpf,
+      dtnsc,
+      email,
+      tel,
+      ocupacao,
+      justgrat,
+      nmrend,
+      compl,
+      endereco
+    } = req.body;
+
+    let enderecoID;
+
+    if (endereco) {
+      // Verifica se já existe um endereço igual no banco
+      const existente = await prisma.endereco.findFirst({
+        where: {
+          CEP_endereco: endereco.cep,
+          LGDR_endereco: endereco.lgdr,
+          NOME_endereco: endereco.nome,
+          UF_endereco: endereco.uf,
+          BAIRRO_endereco: endereco.bairro,
+          CIDADE_endereco: endereco.cidade
+        }
+      });
+
+      if (existente) {
+        enderecoID = existente.ID_endereco;
+      } else {
+        const novoEnd = await prisma.endereco.create({
+          data: {
+            CEP_endereco: endereco.cep,
+            LGDR_endereco: endereco.lgdr,
+            NOME_endereco: endereco.nome,
+            UF_endereco: endereco.uf,
+            BAIRRO_endereco: endereco.bairro,
+            CIDADE_endereco: endereco.cidade
+          },
+        });
+        enderecoID = novoEnd.ID_endereco;
+      }
+    }
+
+    const dataNascimento = dtnsc ? new Date(dtnsc) : null;
+
+    const updatedCliente = await prisma.cliente.update({
+      where: { ID_cliente: id },
+      data: {
+        NOME_cliente: nome,
+        RG_cliente: rg,
+        CPF_cliente: cpf,
+        DTNSC_cliente: dataNascimento,
+        EMAIL_cliente: email,
+        TEL_cliente: tel,
+        OCUPACAO_cliente: ocupacao,
+        JUSTGRAT_cliente: justgrat,
+        NMREND_cliente: nmrend,
+        COMPL_cliente: compl,
+        ...(enderecoID && { Enderecos_ID_endereco: enderecoID })
+      },
+      include: { endereco: true }
+    });
+
+    res.json(updatedCliente);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
