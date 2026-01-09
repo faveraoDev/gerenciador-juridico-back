@@ -99,9 +99,10 @@ The API will be available at:
 
 ![Badge com logo Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)  – Node.js  
 ![Badge com logo TypeScript](https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF)  – TypeScript  
+![Badge com logo TypeScript](https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=fff&style=flat)  – Express.js  
 ![Badge com logo Swagger](https://img.shields.io/badge/-Swagger-85EA2D?style=flat&logo=swagger&logoColor=white)  – Swagger OpenAPI  
 ![Badge com logo JWT](https://img.shields.io/badge/JWT-black?style=plastic&logo=JSON%20web%20tokens)  – JWT (JSON Web Token)  
-![Badge com logo Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)  – Prisma ORM  
+![Badge com logo Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)  – Prisma ORM
 
 ---
 
@@ -201,6 +202,7 @@ A API estará disponível em:
 
 ![Badge com logo Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)  – Node.js  
 ![Badge com logo TypeScript](https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF)  – TypeScript  
+![Badge com logo TypeScript](https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=fff&style=flat)  – Express.js  
 ![Badge com logo Swagger](https://img.shields.io/badge/-Swagger-85EA2D?style=flat&logo=swagger&logoColor=white)  – Swagger OpenAPI  
 ![Badge com logo JWT](https://img.shields.io/badge/JWT-black?style=plastic&logo=JSON%20web%20tokens)  – JWT (JSON Web Token)  
-![Badge com logo Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)  – Prisma ORM  
+![Badge com logo Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)  – Prisma ORM
